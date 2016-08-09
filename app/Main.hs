@@ -1,23 +1,35 @@
 module Main where
 
+import qualified Data.ByteString.Char8 as C8    ( unpack)
 import qualified Data.ByteString as B           ( drop
                                                 , splitAt
                                                 , take
                                                 , unpack
                                                 , ByteString(..) )
-import qualified Data.ByteString.Char8 as C8    ( unpack)
-import Data.Maybe                               (fromJust)
+
+import Control.Monad.IO.Class                   ( liftIO )
+import Data.Conduit                             ( (=$)
+                                                , (=$=)
+                                                , ($$)
+                                                , await
+                                                , yield
+                                                , Conduit 
+                                                , Sink)
+import Data.Conduit.List                        ( mapMaybe )
+import Data.Maybe                               ( fromJust )
 import Network.Pcap                             ( loopBS
                                                 , openOffline
                                                 , PcapHandle
                                                 , PktHdr )
+import Network.Pcap.Conduit                     ( sourceOffline
+                                                , Packet )
 import System.Environment                       ( getArgs )
 
 import Lib
 
 data QuotePacket = QuotePacket { getMarketType :: B.ByteString
                                , getIssueSeqNo :: B.ByteString
-                               , getQuoteAcceptTime :: B.ByteString
+                               , getQuoteAcceptTime :: Integer
                                } deriving (Eq, Show)
 
 instance Ord QuotePacket where
@@ -26,33 +38,45 @@ instance Ord QuotePacket where
 main :: IO ()
 main = do
     args <- getArgs
-    input <- openOffline("mdf-kospi200.20110216-0.pcap")
     if "r" `elem` args
-       then putStrLn("sort!")
-       else readPcap input
+       then sourceOffline("mdf-kospi200.20110216-0.pcap") $$ (toPacket =$= reorderPacket)=$ printPacket
+       else sourceOffline("mdf-kospi200.20110216-0.pcap") $$ toPacket =$ printPacket
 
-readPcap :: PcapHandle -> IO ()
-readPcap input = do
-    loopBS input (-1) parsePcapLine
-    return ()
-
-quicksort :: Ord a => [a] -> [a]
-quicksort []     = []
-quicksort (p:xs) = (quicksort lesser) ++ [p] ++ (quicksort greater)
-    where lesser  = filter (< p) xs
-          greater = filter (>= p) xs
-
-parsePcapLine :: PktHdr -> B.ByteString -> IO ()
-parsePcapLine hdr bs = do
-    let content = toQuotePacket bs
-    printPacket content
+merge :: Ord a => [a] -> [a] -> [a]
+merge xs [] = xs
+merge [] ys = ys
+merge (x:xs) (y:ys)
+  | x <= y      = x:(merge xs (y:ys))
+  | otherwise   = y:(merge (x:xs) ys)
 
 toPort :: [Integer] -> Integer
 toPort (x:[]) = x
 toPort (x:xs) = (x * 256) + toPort xs
 
-toQuotePacket :: B.ByteString -> Maybe QuotePacket
-toQuotePacket bs
+
+reorderPacket :: Conduit QuotePacket IO QuotePacket
+reorderPacket = loop []
+    where yieldItem x = do
+              if length x == 1
+                  then yield $ head x
+                  else do
+                      yield $ head x
+                      yieldItem $ tail x
+          loop xs = do
+              x <- await
+              case x of
+                  Nothing -> yieldItem xs
+                  Just x -> do
+                      {-let sorted = quicksort (xs ++ [x])-}
+                      let sorted = merge xs [x]
+                      if getQuoteAcceptTime (head sorted) + 300 < getQuoteAcceptTime x
+                          then do
+                              yield $ head sorted
+                              loop $ tail sorted
+                          else loop sorted
+
+toQuotePacket' :: B.ByteString -> Maybe QuotePacket
+toQuotePacket' bs
     | (C8.unpack . B.take 5) content /= "B6034"             = Nothing
     | not $ destPort `elem` [15515, 15516]                  = Nothing
     | otherwise                                             = Just $ QuotePacket marketType issueSeqNo quoteAcceptTime
@@ -60,13 +84,22 @@ toQuotePacket bs
           destPort = toPort $ map toInteger ((B.unpack . B.take 2 . B.drop 36) header)
           marketType = (B.take 12 . B.drop 5) content
           issueSeqNo = (B.take 3. B.drop 17) content
-          quoteAcceptTime = (B.take 8 . B.drop 206) content
+          quoteAcceptTime = read $ (C8.unpack . B.take 8 . B.drop 206) content :: Integer
 
-printPacket :: Maybe QuotePacket -> IO ()
-printPacket Nothing = return ()
-printPacket (Just (QuotePacket marketType issueSeqNo quoteAcceptTime)) = do
-    putStrLn $ "MarketType: " ++ C8.unpack marketType
-    putStrLn $ "IssueSeqNo: " ++ C8.unpack issueSeqNo
-    putStrLn $ "Quote Accept Time: " ++ C8.unpack quoteAcceptTime
-    putStrLn ""
-    return ()
+toQuotePacket :: Packet -> Maybe QuotePacket
+toQuotePacket (hdr, bs) = toQuotePacket' bs
+
+toPacket :: Conduit Packet IO QuotePacket
+toPacket = mapMaybe toQuotePacket
+
+printPacket :: Sink QuotePacket IO ()
+printPacket = do
+    mstr <- await
+    case mstr of
+      Nothing -> return ()
+      Just (QuotePacket marketType issueSeqNo quoteAcceptTime) -> do
+        liftIO $ putStrLn $ "MarketType: " ++ C8.unpack marketType
+        liftIO $ putStrLn $ "IssueSeqNo: " ++ C8.unpack issueSeqNo
+        liftIO $ putStrLn $ "Quote Accept Time: " ++ show quoteAcceptTime
+        liftIO $ putStrLn ""
+        printPacket
