@@ -3,30 +3,22 @@ Code sample for Tsuru Capital
 
 ## Unordered
 
-time for i in {1..10}; do stack exec marketfeed-exe r > sorted.txt; done
+time stack exec marketfeed-exe > unsorted.txt
 
-real    0m4.974s
+real    0m1.575s
 
-user    0m3.833s
+user    0m1.805s
 
-sys 0m1.487s
+sys     0m0.319s
 
-## MergeSort
 
-time for i in {1..10}; do stack exec marketfeed-exe r > sorted.txt; done
 
-real    0m35.596s
+## Ordered by Quote Accept Time
 
-user    0m31.566s
+time stack exec marketfeed-exe -r > sorted.txt
 
-sys 0m9.622s
+real    0m3.156s
 
-## Insertion
+user    0m4.431s
 
-time for i in {1..10}; do stack exec marketfeed-exe r > sorted.txt; done
-
-real    0m18.747s
-
-user    0m19.729s
-
-sys 0m7.708s
+sys     0m1.611s
