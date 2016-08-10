@@ -5,21 +5,18 @@ import Data.ByteString                          ( ByteString )
 import Data.List                                ( intercalate )
 import Data.Int                                 ( Int64 )
 
-data Bid = Bid { getBidPrice :: Integer
-  , getBidQuantity :: Integer } deriving (Eq)
+data Quote = Quote { getBidPrice :: Integer
+                   , getBidQuantity :: Integer } deriving (Eq)
 
-instance Show Bid where
-    show (Bid price quantity) = show price ++ "@" ++ show quantity
+type Bid = Quote
 
-data Ask = Ask { getAskPrice :: Integer
-               , getAskQuantity :: Integer } deriving (Eq)
+type Ask = Quote
 
-instance Show Ask where
-    show (Ask price quantity) = show price ++ "@" ++ show quantity
+instance Show Quote where
+    show (Quote price quantity) = show price ++ "@" ++ show quantity
+
 
 data PacketTime = PacketTime Int64 deriving (Eq)
-
-data QuoteAcceptTime = QuoteAcceptTime Integer deriving (Eq)
 
 instance Show PacketTime where
     show (PacketTime x) = show hours ++ ":" ++ show minutes ++ ":" ++ show seconds ++ ":" ++ show milliseconds
@@ -29,7 +26,7 @@ instance Show PacketTime where
               hours = (x `div` (1000*1000*60*60)) `rem` 24
 
 data QuotePacket = QuotePacket { getPacketTime :: PacketTime
-                               , getIssueSeqNo :: ByteString
+                               , getIssueCode :: String
                                , getQuoteAcceptTime :: Integer
                                , getFirstBid :: Bid
                                , getSecondBid :: Bid
@@ -55,17 +52,5 @@ formatQuoteAcceptTime x = show hours ++ ":" ++ show minutes ++ ":" ++ show secon
           hours = x `div` 1000000 `rem` 100
 
 printQuotePacket :: QuotePacket -> IO ()
-printQuotePacket (QuotePacket packetTime issueSeqNo quoteAcceptTime firstBid secondBid thirdBid fourthBid fifthBid firstAsk secondAsk thirdAsk fourthAsk fifthAsk) = putStrLn formatted
-    where formatted = intercalate " " [ show packetTime
-                                      , formatQuoteAcceptTime quoteAcceptTime
-                                      , unpack issueSeqNo
-                                      , show firstBid
-                                      , show secondBid
-                                      , show thirdBid
-                                      , show fourthBid
-                                      , show fifthBid
-                                      , show firstAsk
-                                      , show secondAsk
-                                      , show thirdAsk
-                                      , show fourthAsk
-                                      , show fifthAsk]
+printQuotePacket (QuotePacket packetTime issueCode quoteAcceptTime firstBid secondBid thirdBid fourthBid fifthBid firstAsk secondAsk thirdAsk fourthAsk fifthAsk) = putStrLn formatted
+    where formatted = intercalate " " $ [ show packetTime , formatQuoteAcceptTime quoteAcceptTime , issueCode] ++ map show [firstBid, secondBid, thirdBid, fourthBid, fifthBid, firstAsk, secondAsk, thirdAsk, fourthAsk]
