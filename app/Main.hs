@@ -27,7 +27,7 @@ import Model
 main :: IO ()
 main = do
     args <- getArgs
-    if "r" `elem` args
+    if "-r" `elem` args
        then sourceOffline("mdf-kospi200.20110216-0.pcap") $$ (toPacket =$= reorderPacket)=$ printPacket
        else sourceOffline("mdf-kospi200.20110216-0.pcap") $$ toPacket =$ printPacket
 
