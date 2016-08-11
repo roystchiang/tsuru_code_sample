@@ -3,7 +3,8 @@ module Model
     , PacketTime(..)
     , QuotePacket(..) )where
 
-import Data.ByteString.Char8                    ( unpack )
+import Data.ByteString.Char8                    ( readInteger
+                                                , unpack )
 import Data.ByteString                          ( ByteString )
 import Data.List                                ( intercalate )
 import Data.Int                                 ( Int64 )
@@ -70,7 +71,9 @@ instance Ord QuotePacket where
 
 bsToQuote :: ByteString -> ByteString -> Quote
 bsToQuote price quantity = Quote (bsToInteger price) (bsToInteger quantity)
-    where bsToInteger bs = read $ unpack bs
+    where bsToInteger bs = fromMaybe $ readInteger bs
+          fromMaybe Nothing = 0
+          fromMaybe (Just (x, _)) = x
 
 formatQuoteAcceptTime :: Integer -> String
 formatQuoteAcceptTime x = intercalate ":" $ [ show hours
