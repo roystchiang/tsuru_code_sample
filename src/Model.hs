@@ -1,5 +1,6 @@
 module Model
-    ( bsToQuote
+    ( bsToInteger
+    , bsToQuote
     , PacketTime(..)
     , QuotePacket(..) )where
 
@@ -69,11 +70,13 @@ instance Show QuotePacket where
 instance Ord QuotePacket where
     compare x y     = compare (getQuoteAcceptTime x) (getQuoteAcceptTime y)
 
+bsToInteger :: ByteString -> Integer
+bsToInteger bs = fromMaybe $ readInteger bs
+    where fromMaybe Nothing = 0
+          fromMaybe (Just (x, _)) = x
+
 bsToQuote :: ByteString -> ByteString -> Quote
 bsToQuote price quantity = Quote (bsToInteger price) (bsToInteger quantity)
-    where bsToInteger bs = fromMaybe $ readInteger bs
-          fromMaybe Nothing = 0
-          fromMaybe (Just (x, _)) = x
 
 formatQuoteAcceptTime :: Integer -> String
 formatQuoteAcceptTime x = intercalate ":" $ [ show hours

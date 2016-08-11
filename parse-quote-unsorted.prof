@@ -1,0 +1,149 @@
+	Thu Aug 11 10:56 2016 Time and Allocation Profiling Report  (Final)
+
+	   parse-quote +RTS -N -p -RTS
+
+	total time  =        0.27 secs   (269 ticks @ 1000 us, 1 processor)
+	total alloc = 528,204,376 bytes  (excludes profiling overheads)
+
+COST CENTRE                     MODULE               %time %alloc
+
+show                            Model                 14.5   15.1
+printPacket                     Main                  13.8    3.7
+splitBS                         Helper                11.9   23.3
+show.formatted                  Model                 11.2   23.8
+bsToInteger                     Model                  8.2   10.7
+main                            Main                   4.8    1.8
+sourcePcap1                     Network.Pcap.Conduit   3.0    4.9
+packetToQuotePacket.firstAsk    Main                   3.0    0.2
+formatQuoteAcceptTime           Model                  2.6    4.0
+toPacket.toQuotePacket          Main                   2.6    1.3
+packetToQuotePacket             Main                   2.6    1.7
+packetToQuotePacket.secondBid   Main                   2.6    0.2
+bsToQuote                       Model                  1.9    0.0
+packetToQuotePacket.fifthAsk    Main                   1.9    0.2
+packetToQuotePacket.thirdAsk    Main                   1.9    0.2
+packetToQuotePacket.secondAsk   Main                   1.5    0.2
+packetToQuotePacket.firstBid    Main                   1.5    0.2
+show                            Model                  1.1    4.2
+toPort                          Helper                 1.1    0.1
+toPacket.toQuotePacket.destPort Main                   1.1    1.1
+packetToQuotePacket.fourthBid   Main                   1.1    0.2
+packetToQuotePacket.issueCode   Main                   1.1    1.5
+
+
+                                                                                   individual     inherited
+COST CENTRE                              MODULE                  no.     entries  %time %alloc   %time %alloc
+
+MAIN                                     MAIN                     91           0    0.0    0.0   100.0  100.0
+ main                                    Main                    183           0    4.8    1.8    99.6   99.7
+  printPacket                            Main                    205           0   13.4    3.5    44.2   51.2
+   show                                  Model                   207       16004    0.0    0.0    30.9   47.7
+    show.formatted                       Model                   208       16004   11.2   23.8    30.9   47.7
+     show                                Model                   236      160040   14.5   15.1    14.5   15.1
+     formatQuoteAcceptTime               Model                   218       16004    2.6    4.0     3.0    4.5
+      formatQuoteAcceptTime.milliseconds Model                   232       16004    0.0    0.0     0.0    0.0
+      formatQuoteAcceptTime.seconds      Model                   231       16004    0.0    0.2     0.0    0.2
+      formatQuoteAcceptTime.minutes      Model                   230       16004    0.4    0.2     0.4    0.2
+      formatQuoteAcceptTime.hours        Model                   219       16004    0.0    0.2     0.0    0.2
+     show                                Model                   210       16004    1.1    4.2     2.2    4.2
+      show.milliseconds                  Model                   215       16004    0.0    0.0     0.0    0.0
+      show.seconds                       Model                   214       16004    0.0    0.0     0.0    0.0
+      show.minutes                       Model                   213       16004    0.4    0.0     0.4    0.0
+      show.hours                         Model                   211       16004    0.7    0.0     0.7    0.0
+  toPacket.toQuotePacket                 Main                    196       21273    2.6    1.3    47.2   41.8
+   packetToQuotePacket                   Main                    206       16004    2.6    1.7    42.0   39.4
+    packetToQuotePacket.fifthAsk         Main                    271       16004    1.9    0.2     2.2    1.2
+     bsToQuote                           Model                   272       16004    0.0    0.0     0.4    1.0
+      bsToInteger                        Model                   273       32008    0.4    1.0     0.4    1.0
+       bsToInteger.fromMaybe             Model                   274       32008    0.0    0.0     0.0    0.0
+    packetToQuotePacket.fourthAsk        Main                    267       16004    0.4    0.2     2.6    1.2
+     bsToQuote                           Model                   268       16004    0.4    0.0     2.2    1.0
+      bsToInteger                        Model                   269       32008    1.9    1.0     1.9    1.0
+       bsToInteger.fromMaybe             Model                   270       32008    0.0    0.0     0.0    0.0
+    packetToQuotePacket.thirdAsk         Main                    263       16004    1.9    0.2     2.6    1.2
+     bsToQuote                           Model                   264       16004    0.0    0.0     0.7    1.0
+      bsToInteger                        Model                   265       32008    0.7    1.0     0.7    1.0
+       bsToInteger.fromMaybe             Model                   266       32008    0.0    0.0     0.0    0.0
+    packetToQuotePacket.secondAsk        Main                    259       16004    1.5    0.2     1.9    1.2
+     bsToQuote                           Model                   260       16004    0.0    0.0     0.4    1.0
+      bsToInteger                        Model                   261       32008    0.4    1.0     0.4    1.0
+       bsToInteger.fromMaybe             Model                   262       32008    0.0    0.0     0.0    0.0
+    packetToQuotePacket.firstAsk         Main                    255       16004    3.0    0.2     4.1    1.2
+     bsToQuote                           Model                   256       16004    0.4    0.0     1.1    1.0
+      bsToInteger                        Model                   257       32008    0.7    1.0     0.7    1.0
+       bsToInteger.fromMaybe             Model                   258       32008    0.0    0.0     0.0    0.0
+    packetToQuotePacket.fifthBid         Main                    251       16004    0.7    0.2     2.6    1.2
+     bsToQuote                           Model                   252       16004    0.4    0.0     1.9    1.0
+      bsToInteger                        Model                   253       32008    1.1    1.0     1.5    1.0
+       bsToInteger.fromMaybe             Model                   254       32008    0.4    0.0     0.4    0.0
+    packetToQuotePacket.fourthBid        Main                    247       16004    1.1    0.2     2.6    1.2
+     bsToQuote                           Model                   248       16004    0.7    0.0     1.5    1.0
+      bsToInteger                        Model                   249       32008    0.7    1.0     0.7    1.0
+       bsToInteger.fromMaybe             Model                   250       32008    0.0    0.0     0.0    0.0
+    packetToQuotePacket.thirdBid         Main                    243       16004    0.4    0.2     0.7    1.2
+     bsToQuote                           Model                   244       16004    0.0    0.0     0.4    1.0
+      bsToInteger                        Model                   245       32008    0.4    1.0     0.4    1.0
+       bsToInteger.fromMaybe             Model                   246       32008    0.0    0.0     0.0    0.0
+    packetToQuotePacket.secondBid        Main                    239       16004    2.6    0.2     3.3    1.2
+     bsToQuote                           Model                   240       16004    0.0    0.0     0.7    1.0
+      bsToInteger                        Model                   241       32008    0.7    1.0     0.7    1.0
+       bsToInteger.fromMaybe             Model                   242       32008    0.0    0.0     0.0    0.0
+    packetToQuotePacket.firstBid         Main                    234       16004    1.5    0.2     2.6    1.2
+     bsToQuote                           Model                   235       16004    0.0    0.0     1.1    1.0
+      bsToInteger                        Model                   237       32008    0.7    1.0     1.1    1.0
+       bsToInteger.fromMaybe             Model                   238       32008    0.4    0.0     0.4    0.0
+    packetToQuotePacket.issueCode        Main                    233       16004    1.1    1.5     1.1    1.5
+    packetToQuotePacket.content          Main                    224       16004    0.0    0.0     0.0    0.0
+    packetToQuotePacket.(...)            Main                    223       16004    0.0    0.0     0.0    0.0
+    packetToQuotePacket.args             Main                    221       16004    0.0    0.0    11.9   23.3
+     splitBS                             Helper                  222      656164   11.9   23.3    11.9   23.3
+    packetToQuotePacket.quoteAcceptTime  Main                    220       16004    0.7    0.0     1.1    0.5
+     bsToInteger                         Model                   225       16004    0.4    0.5     0.4    0.5
+      bsToInteger.fromMaybe              Model                   226       16004    0.0    0.0     0.0    0.0
+    packetToQuotePacket.packetTime       Main                    209       16004    0.0    0.0     0.0    0.0
+   toPacket.toQuotePacket.header         Main                    203       16004    0.0    0.0     0.0    0.0
+   toPacket.toQuotePacket.destPort       Main                    201       16004    1.1    1.1     2.6    1.2
+    toPort                               Helper                  204       32008    1.1    0.1     1.1    0.1
+    toPacket                             Main                    202           0    0.4    0.0     0.4    0.0
+   toPacket.toQuotePacket.(...)          Main                    198       21273    0.0    0.0     0.0    0.0
+   toPacket.toQuotePacket.content        Main                    197       21273    0.0    0.0     0.0    0.0
+  toPacket                               Main                    195           0    0.4    0.0     0.4    0.0
+  sourceOffline                          Network.Pcap.Conduit    192           0    0.0    0.0     3.0    4.9
+   sourcePcap1                           Network.Pcap.Conduit    194       21274    3.0    4.9     3.0    4.9
+ CAF:main1                               Main                    180           0    0.0    0.0     0.0    0.0
+  main                                   Main                    182           1    0.0    0.0     0.0    0.0
+ CAF:main6                               Main                    176           0    0.0    0.0     0.0    0.0
+  main                                   Main                    188           0    0.0    0.0     0.0    0.0
+   sourceOffline                         Network.Pcap.Conduit    191           0    0.0    0.0     0.0    0.0
+ CAF:lvl65_r7Ny                          Main                    175           0    0.0    0.0     0.4    0.3
+  main                                   Main                    184           0    0.0    0.0     0.4    0.3
+   printPacket                           Main                    275           0    0.4    0.3     0.4    0.3
+ CAF:lvl64_r7Nx                          Main                    174           0    0.0    0.0     0.0    0.0
+  main                                   Main                    186           0    0.0    0.0     0.0    0.0
+ CAF:toPacket1                           Main                    172           0    0.0    0.0     0.0    0.0
+  toPacket                               Main                    187           1    0.0    0.0     0.0    0.0
+ CAF:printPacket1                        Main                    168           0    0.0    0.0     0.0    0.0
+  printPacket                            Main                    185           1    0.0    0.0     0.0    0.0
+ CAF:lvl9_r7Mx                           Main                    167           0    0.0    0.0     0.0    0.0
+  toPacket                               Main                    199           0    0.0    0.0     0.0    0.0
+   toPacket.toQuotePacket                Main                    200           0    0.0    0.0     0.0    0.0
+ CAF:main7                               Main                    165           0    0.0    0.0     0.0    0.0
+  main                                   Main                    189           0    0.0    0.0     0.0    0.0
+   sourceOffline                         Network.Pcap.Conduit    190           1    0.0    0.0     0.0    0.0
+ CAF:main8                               Main                    164           0    0.0    0.0     0.0    0.0
+  main                                   Main                    193           0    0.0    0.0     0.0    0.0
+ CAF:lvl4_r3kK                           Model                   163           0    0.0    0.0     0.0    0.0
+  show                                   Model                   216           0    0.0    0.0     0.0    0.0
+   show.formatted                        Model                   217           0    0.0    0.0     0.0    0.0
+ CAF:lvl3_r3kJ                           Model                   162           0    0.0    0.0     0.0    0.0
+  show                                   Model                   227           0    0.0    0.0     0.0    0.0
+   show.formatted                        Model                   228           0    0.0    0.0     0.0    0.0
+    formatQuoteAcceptTime                Model                   229           0    0.0    0.0     0.0    0.0
+ CAF:$fShowPacketTime2                   Model                   161           0    0.0    0.0     0.0    0.0
+  show                                   Model                   212           0    0.0    0.0     0.0    0.0
+ CAF                                     GHC.Conc.Signal         135           0    0.0    0.0     0.0    0.0
+ CAF                                     GHC.IO.Encoding         129           0    0.0    0.0     0.0    0.0
+ CAF                                     GHC.IO.Encoding.Iconv   127           0    0.0    0.0     0.0    0.0
+ CAF                                     GHC.IO.Handle.FD        119           0    0.0    0.0     0.0    0.0
+ CAF                                     GHC.IO.Handle.Text      117           0    0.0    0.0     0.0    0.0
+ CAF                                     GHC.Event.Thread        100           0    0.0    0.0     0.0    0.0
