@@ -5,7 +5,7 @@ import qualified Data.ByteString as B           ( drop
                                                 , splitAt
                                                 , take
                                                 , unpack
-                                                , ByteString(..) )
+                                                , ByteString )
 import Control.Monad.IO.Class                   ( liftIO )
 import Data.Conduit                             ( (=$)
                                                 , (=$=)
@@ -21,36 +21,11 @@ import Network.Pcap.Conduit                     ( sourceOffline
                                                 , Packet )
 import System.Environment                       ( getArgs )
 
-import Lib
+import Helper
 import Model
 
-main :: IO ()
-main = do
-    args <- getArgs
-    if "-r" `elem` args
-       then sourceOffline("mdf-kospi200.20110216-0.pcap") $$ (toPacket =$= reorderPacket)=$ printPacket
-       else sourceOffline("mdf-kospi200.20110216-0.pcap") $$ toPacket =$ printPacket
-
-insert :: Ord a => a -> [a] -> [a]
-insert x [] = [x]
-insert x (y:ys)
-    | x >= y    = x:y:ys
-    | otherwise = y:(insert x ys)
-
-toPort :: [Integer] -> Integer
-toPort (x:[]) = x
-toPort (x:xs) = (x * 256) + toPort xs
-
-splitBS :: B.ByteString -> [Int] -> [B.ByteString]
-splitBS _ [] = []
-splitBS bs (x:xs) = B.take x bs : splitBS (B.drop x bs) xs
-
-bsToInteger :: B.ByteString -> Integer
-bsToInteger bs = read $ C8.unpack bs
-
-bsToQuote :: B.ByteString -> B.ByteString -> Quote
-bsToQuote price quantity = Quote (bsToInteger price) (bsToInteger quantity)
-
+-- credits to mavent @ https://gist.github.com/mavant for the idea of using
+-- conduit to sort
 reorderPacket :: Conduit QuotePacket IO QuotePacket
 reorderPacket = loop []
     where yieldItem x = do
@@ -104,5 +79,12 @@ printPacket = do
     case mstr of
       Nothing -> return ()
       Just (quote) -> do
-        liftIO $ printQuotePacket quote
+        liftIO $ putStrLn $ show quote
         printPacket
+
+main :: IO ()
+main = do
+    args <- getArgs
+    if "-r" `elem` args
+       then sourceOffline("mdf-kospi200.20110216-0.pcap") $$ (toPacket =$= reorderPacket)=$ printPacket
+       else sourceOffline("mdf-kospi200.20110216-0.pcap") $$ toPacket =$ printPacket

@@ -13,7 +13,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib, Model
+  exposed-modules:     Helper, Model
   build-depends:       base >= 4.7 && < 5
                      , bytestring == 0.10.6.0
                      , conduit == 1.2.6.6
@@ -41,6 +41,7 @@ test-suite parse-quote-test
   main-is:             Spec.hs
   build-depends:       base
                      , parse-quote
+                     , QuickCheck == 2.8.2
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
